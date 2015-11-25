@@ -2,6 +2,22 @@
 
 A Twitter bot to remember things or threads.
 
+## Table of Contents
+
+* [About](#about)
+* [Usage](#usage)
+  * [Example Usage](#example-usage)
+* [Time Options](#time-options)
+* [FAQ](#faq)
+  * [Why was the message off by a few minutes?](#why-was-the-message-off-by-a-few-minutes)
+  * [Where is this bot running?](#where-is-this-bot-running)
+  * [How do I see all my reminders?](#how-do-i-see-all-my-reminders)
+  * [How do I delete/edit a reminder?](#how-do-i-deleteedit-a-reminder)
+* [Running](#running)
+* [License](#license)
+
+## About
+
 For example, someone tweets a playlist while you're in a meeting. Simply reply to the tread by tagging "@slashRemindMe" and a suitable time when you would like to be reminded. The reminder is sent as a tweet only to you.
 
 Did a politician just make claims about future? `@slashRemindMe a year "to check these claims"` on the tweet, and see if they were right or not.
@@ -12,7 +28,7 @@ Think of @slashRemindMe as a "save for later" natively on Twitter. Here's some [
 
 Simply create a tweet in the format `@slashRemindMe TIME OPTION "MESSAGE" (with quotes)`.
 
-[Time option](#time-option) and message order don't matter. They are also optional. Meaning if you can do a simple `@slashRemindMe` it will default to 1 day and a standard message. Everything before `@slashRemindMe` is not caught and everything after is.
+[Time option](#time-options) and message order don't matter. They are also optional. Meaning if you can do a simple `@slashRemindMe` it will default to 1 day and a standard message. Everything before `@slashRemindMe` is not caught and everything after is.
 
 The message will be shown in the reminder tweet.
 
@@ -28,7 +44,7 @@ The message will be shown in the reminder tweet.
 * EOY means end of year
 * EOM means end of month
 * EOD means end of day
-* BOLDED TIMES INDICATE A SET IN STONE TIME(which can cause problems if you don't live in UTC)
+* **BOLDED TIMES INDICATE A SET IN STONE TIME (which can cause problems if you don't live in UTC)**
 * It's better to use 1 day/week/month than tomorrow/next week/next month because of above
 
 Time Option | New Time
