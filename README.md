@@ -49,24 +49,26 @@ The message will be shown in the reminder tweet.
 
 Time Option | New Time
 ---------|----------
-RemindMe! One Year | 2015-06-01 01:37:35 PST
-RemindMe! 3 Months | 2014-09-01 01:37:35 PST
-RemindMe! One Week | 2014-06-08 01:37:35 PST
-RemindMe! 1 Day | 2014-06-02 01:37:35 PST
-RemindMe! 33 Hours | 2014-06-02 10:37:35 PST
-RemindMe! 10 Minutes | 2014-06-01 01:47:35 PST
-RemindMe! August 25th, 2014 | 2014-08-25 01:37:35 PST
-RemindMe! 25 Aug 2014 | 2014-08-25 01:37:35 PST
-RemindMe! 5pm August 25 | **2014-08-25 17:00:00 PST**
-RemindMe! Next Saturday | **2014-06-14 09:00:00 PST**
-RemindMe! Tomorrow | **2014-06-02 09:00:00 PST**
-RemindMe! Next Thursday at 4pm | **2014-06-12 16:00:00 PST**
-RemindMe! Tonight | **2014-06-01 21:00:00 PST**
-RemindMe! at 4pm | **2014-06-01 16:00:00 PST**
-RemindMe! 2 Hours After Noon | **2014-06-01 14:00:00 PST**
-RemindMe! eoy | **2014-12-31 09:00:00 PST**
-RemindMe! eom | **2014-06-30 09:00:00 PST**
-RemindMe! eod | **2014-06-01 17:00:00 PST**
+@slashRemindMe One Year | 2015-06-01 01:37:35 PST
+@slashRemindMe 3 Months | 2014-09-01 01:37:35 PST
+@slashRemindMe One Week | 2014-06-08 01:37:35 PST
+@slashRemindMe 1 Day | 2014-06-02 01:37:35 PST
+@slashRemindMe 33 Hours | 2014-06-02 10:37:35 PST
+@slashRemindMe 10 Minutes | 2014-06-01 01:47:35 PST
+@slashRemindMe August 25th, 2014 | 2014-08-25 01:37:35 PST
+@slashRemindMe 25 Aug 2014 | 2014-08-25 01:37:35 PST
+@slashRemindMe 5pm August 25 | **2014-08-25 17:00:00 PST**
+@slashRemindMe Next Saturday | **2014-06-14 09:00:00 PST**
+@slashRemindMe Tomorrow | **2014-06-02 09:00:00 PST**
+@slashRemindMe Next Thursday at 4pm | **2014-06-12 16:00:00 PST**
+@slashRemindMe Tonight | **2014-06-01 21:00:00 PST**
+@slashRemindMe at 4pm | **2014-06-01 16:00:00 PST**
+@slashRemindMe 2 Hours After Noon | **2014-06-01 14:00:00 PST**
+@slashRemindMe eoy | **2014-12-31 09:00:00 PST**
+@slashRemindMe eom | **2014-06-30 09:00:00 PST**
+@slashRemindMe eod | **2014-06-01 17:00:00 PST**
+
+Note: Timezone above is PST because I'm in PST.
 
 ## FAQ
 
