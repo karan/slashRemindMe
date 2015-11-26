@@ -39,34 +39,34 @@ The message will be shown in the reminder tweet.
 
 ## Time Options
 
-* All times are in UTC only. You can't use your time zone.
+* Bot tries to figure out your timezone. If it cannot, it defaults to PST.
 * There are more options than stated here. Try to see if you can find more and I'll add them!
 * EOY means end of year
 * EOM means end of month
 * EOD means end of day
-* **BOLDED TIMES INDICATE A SET IN STONE TIME (which can cause problems if you don't live in UTC)**
+* **BOLDED TIMES INDICATE A SET IN STONE TIME (which can cause problems if you don't live in PST)**
 * It's better to use 1 day/week/month than tomorrow/next week/next month because of above
 
 Time Option | New Time
 ---------|----------
-RemindMe! One Year | 2015-06-01 01:37:35 UTC
-RemindMe! 3 Months | 2014-09-01 01:37:35 UTC
-RemindMe! One Week | 2014-06-08 01:37:35 UTC
-RemindMe! 1 Day | 2014-06-02 01:37:35 UTC
-RemindMe! 33 Hours | 2014-06-02 10:37:35 UTC
-RemindMe! 10 Minutes | 2014-06-01 01:47:35 UTC
-RemindMe! August 25th, 2014 | 2014-08-25 01:37:35 UTC
-RemindMe! 25 Aug 2014 | 2014-08-25 01:37:35 UTC
-RemindMe! 5pm August 25 | **2014-08-25 17:00:00 UTC**
-RemindMe! Next Saturday | **2014-06-14 09:00:00 UTC**
-RemindMe! Tomorrow | **2014-06-02 09:00:00 UTC**
-RemindMe! Next Thursday at 4pm | **2014-06-12 16:00:00 UTC**
-RemindMe! Tonight | **2014-06-01 21:00:00 UTC**
-RemindMe! at 4pm | **2014-06-01 16:00:00 UTC**
-RemindMe! 2 Hours After Noon | **2014-06-01 14:00:00 UTC**
-RemindMe! eoy | **2014-12-31 09:00:00 UTC**
-RemindMe! eom | **2014-06-30 09:00:00 UTC**
-RemindMe! eod | **2014-06-01 17:00:00 UTC**
+RemindMe! One Year | 2015-06-01 01:37:35 PST
+RemindMe! 3 Months | 2014-09-01 01:37:35 PST
+RemindMe! One Week | 2014-06-08 01:37:35 PST
+RemindMe! 1 Day | 2014-06-02 01:37:35 PST
+RemindMe! 33 Hours | 2014-06-02 10:37:35 PST
+RemindMe! 10 Minutes | 2014-06-01 01:47:35 PST
+RemindMe! August 25th, 2014 | 2014-08-25 01:37:35 PST
+RemindMe! 25 Aug 2014 | 2014-08-25 01:37:35 PST
+RemindMe! 5pm August 25 | **2014-08-25 17:00:00 PST**
+RemindMe! Next Saturday | **2014-06-14 09:00:00 PST**
+RemindMe! Tomorrow | **2014-06-02 09:00:00 PST**
+RemindMe! Next Thursday at 4pm | **2014-06-12 16:00:00 PST**
+RemindMe! Tonight | **2014-06-01 21:00:00 PST**
+RemindMe! at 4pm | **2014-06-01 16:00:00 PST**
+RemindMe! 2 Hours After Noon | **2014-06-01 14:00:00 PST**
+RemindMe! eoy | **2014-12-31 09:00:00 PST**
+RemindMe! eom | **2014-06-30 09:00:00 PST**
+RemindMe! eod | **2014-06-01 17:00:00 PST**
 
 ## FAQ
 
@@ -90,13 +90,13 @@ That is currently not possible.
 
 #### Requirements
 
-- Python 3.4
-- pip3
-- sqlite3
+- [Docker](https://docs.docker.com/installation/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+- [Docker Machine](https://docs.docker.com/machine/install-machine/) (Mac OS X)
 
 #### Instructions
 
-Create a file called `config.py` that looks like `config_example.py`. Fill in the necessary values.
+Create a file called `config.env` that looks like `config_example.env`. Fill in the necessary values.
 
 For Twitter config:
 
@@ -107,8 +107,25 @@ For Twitter config:
 Then, to run the bot:
 
 ```bash
-$ pip3 install -r requirements.txt
-$ python3 bot.py
+$ docker-compose up
+```
+
+#### Mac & Docker Machine
+
+If you're using Docker Machine, follow these instructions for installation:
+
+```bash
+# Provision the docker engine
+$ docker-machine create --driver virtualbox remindbot
+
+# Set the environment
+$ eval "$(docker-machine env remindbot)"
+
+# See the IP address of the host
+$ docker-machine ip remindbot
+
+# Start the container
+$ docker-compose up
 ```
 
 ## License

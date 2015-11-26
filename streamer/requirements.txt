@@ -1,0 +1,5 @@
+dataset==0.5.6
+parsedatetime==1.5
+tweepy==3.3.0
+pytz==2014.10
+psycopg2

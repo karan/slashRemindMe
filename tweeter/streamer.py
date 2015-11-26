@@ -1,0 +1,166 @@
+# Built-in imports
+from datetime import datetime
+import logging
+import os
+import re
+import time
+
+# Third-party dependencies
+import dataset
+import tweepy
+import parsedatetime.parsedatetime as pdt
+from pytz import timezone
+
+
+# Set the Twitter credentials
+TWITTER_KEY = os.environ.get('TWITTER_KEY', '')
+TWITTER_SECRET = os.environ.get('TWITTER_SECRET', '')
+TWITTER_TOKEN = os.environ.get('TWITTER_TOKEN', '')
+TWITTER_TOKEN_SECRET = os.environ.get('TWITTER_TOKEN_SECRET', '')
+
+DATABASE = os.environ.get('DATABASE', '')
+
+
+MAX_TWEET_LENGTH = 140
+BACKOFF = 0.5  # Initial wait time before attempting to reconnect
+MAX_BACKOFF = 300  # Maximum wait time between connection attempts
+USERNAME = 'slashRemindMe'
+
+# Regex to pull out the reminder message from the tweet
+INPUT_MESSAGE_RE = '(["].{0,9000}["])'
+REMINDER_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+
+DEFAULT_TIME = "1 day"
+
+# Messages
+REMINDER_SET_MESSAGE = 'Cool. I\'ll remind you at %s'  # time
+DEFAULT_MESSAGE = 'Howdy! Here\'s your reminder.'
+
+# BLACKLIST
+# Do not respond to queries by these accounts
+BLACKLIST = [
+    'pixelsorter',
+    'Lowpolybot',
+    'slashKareBear'
+]
+
+
+logging.basicConfig(filename='logger.log',
+                    level=logging.INFO,
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+# Connect to the db
+db = dataset.connect(DATABASE)
+table = db['reminders']
+
+# Twitter client
+auth = tweepy.OAuthHandler(TWITTER_KEY, TWITTER_SECRET)
+auth.set_access_token(TWITTER_TOKEN, TWITTER_TOKEN_SECRET)
+api = tweepy.API(auth)
+
+# backoff time
+backoff = BACKOFF
+
+# parsedatetime object
+cal = pdt.Calendar()
+
+
+def now():
+    """Get the current time in UTC."""
+    ts = cal.parse('now', datetime.now(timezone('UTC')))[0]
+    return time.strftime(REMINDER_TIME_FORMAT, ts)
+
+
+def parse_message(full_text):
+    """Returns a string message from the tweet if present, otherwise
+    a default message."""
+
+    potential_message = re.search(INPUT_MESSAGE_RE, full_text)
+    if potential_message:
+        return potential_message.group()
+    else:
+        return DEFAULT_MESSAGE
+
+
+def parse_time(full_text):
+    """Returns a string timestamp of when the reminder should be sent.
+    Timestamp is in UTC time zone."""
+
+    potential_timestamp = re.sub(INPUT_MESSAGE_RE, '', full_text)[len('@%s' % USERNAME):]
+
+    if cal.parse(potential_timestamp)[1] == 0:
+        # default time
+        reminder_time = cal.parse(DEFAULT_TIME, datetime.now(timezone('UTC')))[0]
+    else:
+        reminder_time = cal.parse(potential_timestamp, datetime.now(timezone('UTC')))[0]
+
+    # Converting time
+    # YYYY/MM/DD HH/MM/SS
+    return time.strftime(REMINDER_TIME_FORMAT, reminder_time)
+
+
+def parse_tweet(tweet_text):
+    """Parse the tweet text and return the reminder time and message in
+    tuple."""
+
+    full_text = tweet_text[tweet_text.index('@%s' % USERNAME) + len('@%s' % USERNAME) + 1:]
+
+    # Look for a message
+    reminder_message = parse_message(full_text)
+
+    # Look for timestamp
+    reminder_time = parse_time(full_text)
+
+    logging.info('parse_tweet: %s--%s' % (reminder_time.strip(), reminder_message.strip()))
+    return (reminder_time.strip(), reminder_message.strip())
+
+
+class StreamListener(tweepy.StreamListener):
+
+    def on_status(self, status):
+        global backoff
+        backoff = BACKOFF
+
+        # Collect logging and debugging data
+        tweet_id = status.id_str
+        tweet_text = status.text
+        tweet_from = status.user.screen_name
+        parent_tweet = status.in_reply_to_status_id_str or ''
+
+        if tweet_from != USERNAME and tweet_from not in BLACKLIST and not hasattr(status, 'retweeted_status'):
+            logging.info('on_status: %s--%s--%s--%s' % (tweet_id, tweet_text, tweet_from, parent_tweet))
+
+            # Parse tweet for search term
+            reminder_time, reminder_message = parse_tweet(tweet_text)
+
+            table.insert({
+                'created_at': now(),
+                'reminder_time': reminder_time,
+                'reminder_message': reminder_message,
+                'parent_tweet_id': parent_tweet,
+                'username': tweet_from,
+                'tweet_text': tweet_text,
+                'tweet_id': tweet_id,
+                'sent_ts': '',
+                'sent_tweet_id': ''
+            })
+
+
+    def on_error(self, status_code):
+        global backoff
+        logging.info('on_error: %d' % status_code)
+
+        if status_code == 420:
+            backoff = backoff * 2
+            logging.info('on_error: backoff %s seconds' % backoff)
+            time.sleep(backoff)
+            return True
+
+
+stream = tweepy.Stream(auth=api.auth, listener=StreamListener())
+try:
+    stream.userstream(_with='user', replies='all')
+except Exception as e:
+    logging.info("stream_exception: {0}".format(e))
+    raise e
