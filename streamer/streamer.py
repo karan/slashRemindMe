@@ -25,7 +25,6 @@ DATABASE_URL = 'postgresql://postgres:postgres@%s:%s/' % (
     os.environ.get('POSTGRES_PORT_5432_TCP_ADDR'),
     os.environ.get('POSTGRES_PORT_5432_TCP_PORT'))
 
-print('---->'+DATABASE_URL)
 
 MAX_TWEET_LENGTH = 140
 BACKOFF = 0.5  # Initial wait time before attempting to reconnect
@@ -41,7 +40,6 @@ DEFAULT_TZ = 'UTC'
 
 # Messages
 REMINDER_SET_MESSAGE = 'Cool. I\'ll remind you at %s'  # time
-DEFAULT_MESSAGE = 'Howdy! Here\'s your reminder.'
 
 # BLACKLIST
 # Do not respond to queries by these accounts
@@ -73,14 +71,6 @@ backoff = BACKOFF
 cal = pdt.Calendar()
 
 
-def toUtc(ts):
-    """Convert the passed time.struct_time object to UTC."""
-
-    dt = datetime.fromtimestamp(mktime(ts))
-    return cal.parse(dt.strftime(REMINDER_TIME_FORMAT),
-        datetime.now(timezone('UTC')))[0]
-
-
 def now():
     """Get the current time in UTC."""
     ts = cal.parse('now', datetime.now(timezone(DEFAULT_TZ)))[0]
@@ -95,7 +85,7 @@ def parse_message(full_text):
     if potential_message:
         return potential_message.group()
     else:
-        return DEFAULT_MESSAGE
+        return ''
 
 
 def normalize(utc_time_dt, utc_offset):
@@ -155,15 +145,15 @@ class StreamListener(tweepy.StreamListener):
         parent_tweet = status.in_reply_to_status_id_str or ''
         utc_offset = status.user.utc_offset or 0
 
-        # TODO: Figure out the timezone or default to DEFAULT_TZ
-        timezone =
-
         if tweet_from != USERNAME and tweet_from not in BLACKLIST and not hasattr(status, 'retweeted_status'):
-            logging.info('on_status: %s--%s--%s--%s' % (tweet_id, tweet_text, tweet_from, parent_tweet))
+            logging.info('on_status: %s--%s--%s--%s--%d' % (
+                tweet_id, tweet_text, tweet_from, parent_tweet, utc_offset))
 
             # Parse tweet for search term
             reminder_time, reminder_message = parse_tweet(tweet_text, utc_offset)
 
+            logging.info('on_status_parse: %s--%s' % (
+                reminder_time, reminder_message))
             table.insert({
                 'created_at': now(),
                 'reminder_time': reminder_time,
@@ -179,18 +169,22 @@ class StreamListener(tweepy.StreamListener):
 
     def on_error(self, status_code):
         global backoff
-        logging.info('on_error: %d' % status_code)
+        logging.error('on_error: %d' % status_code)
 
         if status_code == 420:
             backoff = backoff * 2
-            logging.info('on_error: backoff %s seconds' % backoff)
+            logging.error('on_error: backoff %s seconds' % backoff)
             time.sleep(backoff)
             return True
 
 
-stream = tweepy.Stream(auth=api.auth, listener=StreamListener())
-try:
+if __name__ == '__main__':
+    print('I\' running...')
+    for r in table:
+        print(r)
+    stream = tweepy.Stream(auth=api.auth, listener=StreamListener())
+    # try:
     stream.userstream(_with='user', replies='all')
-except Exception as e:
-    logging.info("stream_exception: {0}".format(e))
-    raise e
+    # except Exception as e:
+    #     logging.info("stream_exception: {0}".format(e))
+    #     raise e

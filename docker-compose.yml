@@ -19,11 +19,12 @@ postgres:
 streamer:
     build: streamer
     command: python -u streamer.py
+    restart: always
     env_file: config.env
-    ports:
-        - "80:80"
+    # ports:
+    #     - "80:80"
     volumes:
-        - streamer/:/app/streamer/
+        - ./streamer/:/app/streamer/
         # - data/:/app/streamer/data
     links:
         - postgres
