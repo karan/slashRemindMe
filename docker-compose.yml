@@ -2,11 +2,15 @@
 ## Data container
 ###################
 
-data:
-    image: cogniteev/echo
-    volumes:
-        - data/:/app/data
+# data:
+#     image: cogniteev/echo
+#     volumes:
+#         - data/:/app/data
 
+postgres:
+    image: postgres:9.4
+    ports:
+        - "5432"
 
 ###################
 ## Streamer
@@ -19,10 +23,10 @@ streamer:
     ports:
         - "80:80"
     volumes:
-        # - streamer/:/app/streamer/
-        - data/:/app/streamer/data
+        - streamer/:/app/streamer/
+        # - data/:/app/streamer/data
     links:
-        - "data:data"
+        - postgres
 
 
 ###################

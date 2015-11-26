@@ -21,6 +21,12 @@ TWITTER_SECRET = os.environ.get('TWITTER_SECRET', '')
 TWITTER_TOKEN = os.environ.get('TWITTER_TOKEN', '')
 TWITTER_TOKEN_SECRET = os.environ.get('TWITTER_TOKEN_SECRET', '')
 
+DATABASE_URL = 'postgresql://postgres:postgres@%s:%s/' % (
+    os.environ.get('POSTGRES_PORT_5432_TCP_ADDR'),
+    os.environ.get('POSTGRES_PORT_5432_TCP_PORT'))
+
+print('---->'+DATABASE_URL)
+
 MAX_TWEET_LENGTH = 140
 BACKOFF = 0.5  # Initial wait time before attempting to reconnect
 MAX_BACKOFF = 300  # Maximum wait time between connection attempts
@@ -52,7 +58,7 @@ logging.basicConfig(filename='logger.log',
 logger = logging.getLogger(__name__)
 
 # Connect to the db
-db = dataset.connect()
+db = dataset.connect(DATABASE_URL)
 table = db['reminders']
 
 # Twitter client
