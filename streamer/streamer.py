@@ -57,6 +57,7 @@ logger = logging.getLogger(__name__)
 
 # Connect to the db
 db = dataset.connect(DATABASE_URL)
+print('DATABASE_URL=%s' % DATABASE_URL)
 table = db['reminders']
 
 # Twitter client

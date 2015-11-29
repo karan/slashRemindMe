@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 # Built-in imports
-import calendar
 from datetime import datetime, timedelta
 import logging
 import os
@@ -27,15 +26,16 @@ DATABASE_URL = 'postgresql://postgres:postgres@%s:%s/' % (
 
 
 MAX_TWEET_LENGTH = 140
-BACKOFF = 0.5  # Initial wait time before attempting to reconnect
-MAX_BACKOFF = 300  # Maximum wait time between connection attempts
 USERNAME = 'slashRemindMe'
 
 # Regex to pull out the reminder message from the tweet
-INPUT_MESSAGE_RE = '(["].{0,9000}["])'
 REMINDER_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 DEFAULT_TZ = 'UTC'
+DEFAULT_REMINDER_MESSAGE = 'This is your set reminder for %s UTC'  # timestamp
+
+AFTER_TWEET_SLEEP = 2
+SLEEP = 2 * 60
 
 logging.basicConfig(filename='logger.log',
                     level=logging.INFO,
@@ -52,9 +52,6 @@ auth = tweepy.OAuthHandler(TWITTER_KEY, TWITTER_SECRET)
 auth.set_access_token(TWITTER_TOKEN, TWITTER_TOKEN_SECRET)
 api = tweepy.API(auth)
 
-# backoff time
-backoff = BACKOFF
-
 # parsedatetime object
 cal = pdt.Calendar()
 
@@ -68,19 +65,51 @@ def now():
 def search_db():
     '''Returns a list of all rows from db that we can remind right now.'''
     now_ts = now()
-    print(now_ts)
     result = db.query(('select * from reminders '
                        'where sent_tweet_id = \'\''
                        'and reminder_time::timestamp < \'%s\'::timestamp;' % now_ts))
 
-    for row in result:
-        print(row)
+    logging.info('search_db: %d results for time %s' % (
+                result.count, now_ts))
+    return result
+
+
+def send_reminders(result):
+
+    for r in result:
+        r = dict(r)
+        reminder_message = '@%s %s'  # username, message
+        if not r['reminder_message']:
+            reminder_message = reminder_message % (r['username'], DEFAULT_REMINDER_MESSAGE % r['reminder_time'])
+        else:
+            reminder_message = reminder_message % (r['username'], r['reminder_message'])
+
+        logging.info('send_reminders: id=%s, reminder_time=%s' % (r['id'], r['reminder_time']))
+        try:
+            parent = r['parent_tweet_id'] or r['tweet_id']
+            sent_status = api.update_status(status=reminder_message,
+                in_reply_to_status_id=parent)
+
+            table.update({
+                'id': r['id'],
+                'sent_ts': now(),
+                'sent_tweet_id': sent_status.id_str },
+                ['id'])
+            logging.info('send_reminders: %s sent %s' % (sent_status.text, sent_status.id_str))
+        except tweepy.TweepError as e:
+            logging.error('send_reminders: %s' % (e))
+
+        time.sleep(AFTER_TWEET_SLEEP)
 
 
 if __name__ == '__main__':
     print('Tweeter started...')
-    search_db()
-    # while True:
-        # Search database for entries with reminder_time <= now and sent_tweet_id == ''
-        # Send the reminder
-        # Mark as sent (sent_tweet_id=tweet_id, sent_ts=now)
+    while True:
+        if len(db['reminders']) > 0:
+            # Search database for entries with reminder_time <= now and sent_tweet_id == ''
+            result = search_db()
+            # Send the reminder
+            send_reminders(result)
+
+        logger.info('sleeping...')
+        time.sleep(SLEEP)
