@@ -3,9 +3,9 @@
 ###################
 
 postgres:
-    image: postgres:9.4
+    build: postgres
     ports:
-        - "5432"
+        - "5432:5432"
 
 ###################
 ## Streamer
