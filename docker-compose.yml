@@ -2,11 +2,6 @@
 ## Data container
 ###################
 
-# data:
-#     image: cogniteev/echo
-#     volumes:
-#         - data/:/app/data
-
 postgres:
     image: postgres:9.4
     ports:
@@ -21,11 +16,8 @@ streamer:
     command: python -u streamer.py
     restart: always
     env_file: config.env
-    # ports:
-    #     - "80:80"
     volumes:
         - ./streamer/:/app/streamer/
-        # - data/:/app/streamer/data
     links:
         - postgres
 
@@ -34,10 +26,12 @@ streamer:
 ## Tweeter
 ###################
 
-# tweeter:
-#     build: ./tweeter
-#     command: python tweeter.py
-#     volumes:
-#         - tweeter/:/tweeter
-#     links:
-#         - postgres
+tweeter:
+    build: tweeter
+    command: python -u tweeter.py
+    restart: always
+    env_file: config.env
+    volumes:
+        - ./tweeter/:/app/tweeter/
+    links:
+        - postgres
