@@ -39,36 +39,34 @@ The message will be shown in the reminder tweet.
 
 ## Time Options
 
-* Bot tries to figure out your timezone. If it cannot, it defaults to PST.
+* Bot tries to figure out your timezone. If it cannot, it defaults to UTC.
 * There are more options than stated here. Try to see if you can find more and I'll add them!
 * EOY means end of year
 * EOM means end of month
 * EOD means end of day
-* **BOLDED TIMES INDICATE A SET IN STONE TIME (which can cause problems if you don't live in PST)**
-* It's better to use 1 day/week/month than tomorrow/next week/next month because of above
+* **BOLDED TIMES INDICATE A SET IN STONE TIME (which can cause problems if you don't live in UTC)**
+* **It's better to use `10 minutes`, `24 hours`, `4pm on 1 dec` etc than tomorrow/next week/next month because of above**
 
 Time Option | New Time
 ---------|----------
-@slashRemindMe One Year | 2015-06-01 01:37:35 PST
-@slashRemindMe 3 Months | 2014-09-01 01:37:35 PST
-@slashRemindMe One Week | 2014-06-08 01:37:35 PST
-@slashRemindMe 1 Day | 2014-06-02 01:37:35 PST
-@slashRemindMe 33 Hours | 2014-06-02 10:37:35 PST
-@slashRemindMe 10 Minutes | 2014-06-01 01:47:35 PST
-@slashRemindMe August 25th, 2014 | 2014-08-25 01:37:35 PST
-@slashRemindMe 25 Aug 2014 | 2014-08-25 01:37:35 PST
-@slashRemindMe 5pm August 25 | **2014-08-25 17:00:00 PST**
-@slashRemindMe Next Saturday | **2014-06-14 09:00:00 PST**
-@slashRemindMe Tomorrow | **2014-06-02 09:00:00 PST**
-@slashRemindMe Next Thursday at 4pm | **2014-06-12 16:00:00 PST**
-@slashRemindMe Tonight | **2014-06-01 21:00:00 PST**
-@slashRemindMe at 4pm | **2014-06-01 16:00:00 PST**
-@slashRemindMe 2 Hours After Noon | **2014-06-01 14:00:00 PST**
-@slashRemindMe eoy | **2014-12-31 09:00:00 PST**
-@slashRemindMe eom | **2014-06-30 09:00:00 PST**
-@slashRemindMe eod | **2014-06-01 17:00:00 PST**
-
-Note: Timezone above is PST because I'm in PST.
+@slashRemindMe One Year | 2015-06-01 01:37:35 UTC
+@slashRemindMe 3 Months | 2014-09-01 01:37:35 UTC
+@slashRemindMe One Week | 2014-06-08 01:37:35 UTC
+@slashRemindMe 1 Day | 2014-06-02 01:37:35 UTC
+@slashRemindMe 33 Hours | 2014-06-02 10:37:35 UTC
+@slashRemindMe 10 Minutes | 2014-06-01 01:47:35 UTC
+@slashRemindMe August 25th, 2014 | 2014-08-25 01:37:35 UTC
+@slashRemindMe 25 Aug 2014 | 2014-08-25 01:37:35 UTC
+@slashRemindMe 5pm August 25 | **2014-08-25 17:00:00 UTC**
+@slashRemindMe Next Saturday | **2014-06-14 09:00:00 UTC**
+@slashRemindMe Tomorrow | **2014-06-02 09:00:00 UTC**
+@slashRemindMe Next Thursday at 4pm | **2014-06-12 16:00:00 UTC**
+@slashRemindMe Tonight | **2014-06-01 21:00:00 UTC**
+@slashRemindMe at 4pm | **2014-06-01 16:00:00 UTC**
+@slashRemindMe 2 Hours After Noon | **2014-06-01 14:00:00 UTC**
+@slashRemindMe eoy | **2014-12-31 09:00:00 UTC**
+@slashRemindMe eom | **2014-06-30 09:00:00 UTC**
+@slashRemindMe eod | **2014-06-01 17:00:00 UTC**
 
 ## FAQ
 

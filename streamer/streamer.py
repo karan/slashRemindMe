@@ -103,17 +103,39 @@ def parse_time(full_text, utc_offset):
     """Returns a string timestamp of when the reminder should be sent.
     Timestamp is in the time zone corresponding to passed offset."""
 
-    potential_timestamp = re.sub(INPUT_MESSAGE_RE, '', full_text)[len('@%s' % USERNAME):]
+    # Either the potential_timestamp is a duration "tomorrow/1 day" or
+    # absolute time ("4pm")
+    # If it's duration, use UTC timestamp
+    # If it's absolute timestamp, use utc_offset
+    # parseDT[1]:
+    #   0 = not parsed at all
+    #   1 = parsed as a C{date}
+    #   2 = parsed as a C{time}
+    #   3 = parsed as a C{datetime}
 
-    if cal.parse(potential_timestamp)[1] == 0:
-        # default time
-        reminder_time = cal.parseDT(DEFAULT_TIME, datetime.now(timezone(DEFAULT_TZ)))[0]
+    potential_timestamp = re.sub(INPUT_MESSAGE_RE, '', full_text).strip()
+
+    parsed_as = cal.parse(potential_timestamp)[1]
+    normalize_for_tz = False
+
+    if not potential_timestamp or parsed_as == 0:
+        # No timestamp or unparsable timestamp ==> use defaults
+        potential_timestamp = DEFAULT_TIME
+    elif parsed_as == 3:
+        # datetime
+        normalize_for_tz = True
+
+    # Since we cannot determine if parsed_as = (1, 2) is a duration or not,
+    # we assume it is duration, and don't normalize using utc_offset
+    reminder_time = cal.parseDT(potential_timestamp, datetime.now(timezone(DEFAULT_TZ)))[0]
+    if normalize_for_tz:
+        reminder_time = normalize(reminder_time, utc_offset)
     else:
-        reminder_time = cal.parseDT(potential_timestamp, datetime.now(timezone('UTC')))[0]
+        # Convert the datetime object to time.struct_time
+        reminder_time = reminder_time.timetuple()
 
-    # Converting time
-    # YYYY/MM/DD HH/MM/SS
-    return time.strftime(REMINDER_TIME_FORMAT, normalize(reminder_time, utc_offset))
+    # Converting time ==> YYYY/MM/DD HH/MM/SS
+    return time.strftime(REMINDER_TIME_FORMAT, reminder_time)
 
 
 def parse_tweet(tweet_text, utc_offset):
@@ -146,7 +168,7 @@ class StreamListener(tweepy.StreamListener):
         utc_offset = status.user.utc_offset or 0
 
         if tweet_from != USERNAME and tweet_from not in BLACKLIST and not hasattr(status, 'retweeted_status'):
-            logging.info('on_status: %s--%s--%s--%s--%d' % (
+            logging.info('on_status: %s--%s--%s--%s--\"%d\"' % (
                 tweet_id, tweet_text, tweet_from, parent_tweet, utc_offset))
 
             # Parse tweet for search term
@@ -154,6 +176,7 @@ class StreamListener(tweepy.StreamListener):
 
             logging.info('on_status_parse: %s--%s' % (
                 reminder_time, reminder_message))
+
             table.insert({
                 'created_at': now(),
                 'reminder_time': reminder_time,
@@ -165,6 +188,13 @@ class StreamListener(tweepy.StreamListener):
                 'sent_ts': '',
                 'sent_tweet_id': ''
             })
+
+        # DEBUG ONLY
+        for r in table:
+            print(r)
+            print('--------')
+
+        return True
 
 
     def on_error(self, status_code):
@@ -179,9 +209,8 @@ class StreamListener(tweepy.StreamListener):
 
 
 if __name__ == '__main__':
-    print('I\' running...')
-    for r in table:
-        print(r)
+    print('Streamer started...')
+
     stream = tweepy.Stream(auth=api.auth, listener=StreamListener())
     # try:
     stream.userstream(_with='user', replies='all')
