@@ -34,7 +34,7 @@ The message will be shown in the reminder tweet.
 
 ### Example usage
 
-* `Good claims. I'll check them later. @slashRemindMe at 4pm`
+* `Good claims. I'll check them later. @slashRemindMe 4pm`
 * `@slashRemindMe 16 Jan 2016 "Pres debate happening"`
 
 ## Time Options
