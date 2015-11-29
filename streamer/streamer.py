@@ -39,7 +39,7 @@ DEFAULT_TIME = '1 day'
 DEFAULT_TZ = 'UTC'
 
 # Messages
-REMINDER_SET_MESSAGE = 'Cool. I\'ll remind you at %s'  # time
+REMINDER_SET_MESSAGE = '@%s Cool. I\'ll remind you at %s UTC'  # username, time
 
 # BLACKLIST
 # Do not respond to queries by these accounts
@@ -189,10 +189,14 @@ class StreamListener(tweepy.StreamListener):
                 'sent_tweet_id': ''
             })
 
+            api.update_status(
+                status=REMINDER_SET_MESSAGE % (tweet_from, reminder_time),
+                in_reply_to_status_id=tweet_id)
+
         # DEBUG ONLY
-        for r in table:
-            print(r)
-            print('--------')
+        # for r in table:
+        #     print(r)
+        #     print('--------')
 
         return True
 
