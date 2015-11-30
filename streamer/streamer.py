@@ -46,7 +46,8 @@ REMINDER_SET_MESSAGE = '@%s Cool. I\'ll remind you at %s UTC'  # username, time
 BLACKLIST = [
     'pixelsorter',
     'Lowpolybot',
-    'slashKareBear'
+    'slashKareBear',
+    'slashgif'
 ]
 
 
@@ -178,21 +179,22 @@ class StreamListener(tweepy.StreamListener):
             logging.info('on_status_parse: %s--%s' % (
                 reminder_time, reminder_message))
 
-            table.insert({
-                'created_at': now(),
-                'reminder_time': reminder_time,
-                'reminder_message': reminder_message,
-                'parent_tweet_id': parent_tweet,
-                'username': tweet_from,
-                'tweet_text': tweet_text,
-                'tweet_id': tweet_id,
-                'sent_ts': '',
-                'sent_tweet_id': ''
-            })
+            if reminder_time:
+                table.insert({
+                    'created_at': now(),
+                    'reminder_time': reminder_time,
+                    'reminder_message': reminder_message,
+                    'parent_tweet_id': parent_tweet,
+                    'username': tweet_from,
+                    'tweet_text': tweet_text,
+                    'tweet_id': tweet_id,
+                    'sent_ts': '',
+                    'sent_tweet_id': ''
+                })
 
-            api.update_status(
-                status=REMINDER_SET_MESSAGE % (tweet_from, reminder_time),
-                in_reply_to_status_id=tweet_id)
+                api.update_status(
+                    status=REMINDER_SET_MESSAGE % (tweet_from, reminder_time),
+                    in_reply_to_status_id=tweet_id)
 
         # DEBUG ONLY
         # for r in table:
