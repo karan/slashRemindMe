@@ -1,5 +1,7 @@
 # slashRemindMe
 
+[![](http://i.imgur.com/o6bepoH.png?1)](https://twitter.com/slashRemindMe)
+
 A Twitter bot to remember things or threads.
 
 ## Table of Contents
@@ -76,7 +78,7 @@ The bot currently goes to sleep every 2 minutes to save on resources. Meaning yo
 
 #### Where is this bot running?
 
-Currently I'm running this bot on a 1GB [DigitalOcean](https://www.digitalocean.com/?refcode=422889a8186d) instance (yes, that's an affiliate link. Use that to get a free VPS for 2 months). The bot is not resource-intensive and uses a couple dozen MBs of RAM.
+Currently I'm running this bot on a 1GB [DigitalOcean](https://www.digitalocean.com/?refcode=422889a8186d) instance (yes, that's an affiliate link. Use that to get a free VPS). The bot is not resource-intensive and uses a couple dozen MBs of RAM.
 
 #### How do I see all my reminders?
 
